@@ -3,479 +3,595 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rapor BEM FAHUTAN 2025/2026</title>
+    <title>Sistem Persuratan BEM Fahutan IPB</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-        body { font-family: 'Poppins', sans-serif; overflow-x: hidden; }
-        .glass { background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 10px 40px 0 rgba(148, 0, 211, 0.5); }
-        .animated-bg { background: linear-gradient(-45deg, #4b0082, #9400D3, #8a2be2, #4b0082); background-size: 400% 400%; animation: gradient 15s ease infinite; }
-        @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        .progress-bar-fill { transition: width 2s cubic-bezier(0.22, 1, 0.36, 1); }
-        .tab-active { border-bottom: 4px solid #9400D3; color: #9400D3; font-weight: 800; }
-        .hero-gradient-card { background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%); box-shadow: 0 20px 40px rgba(124, 58, 237, 0.3); }
-        .star-group { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 6px; }
-        .star-group input { display: none; }
-        .star-group label { font-size: 2.2rem; color: #cbd5e1; cursor: pointer; transition: transform 0.2s, color 0.2s; }
-        .star-group label:hover, .star-group label:hover ~ label, .star-group input:checked ~ label { color: #f59e0b; transform: scale(1.1); }
-        .best-score-row { background-color: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .success-overlay { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); }
-        
-        /* Ikon Mata Login */
-        .password-input-container { position: relative; width: 100%; display: flex; align-items: center; }
-        .eye-btn-login { position: absolute; right: 1rem; color: rgba(255, 255, 255, 0.7); cursor: pointer; padding: 0.5rem; z-index: 60; background: transparent; border: none; outline: none; }
-        .eye-btn-login:hover { color: white; }
-        
-        .ai-btn-glow { animation: pulse-ai 2.5s infinite; }
-        @keyframes pulse-ai {
-            0% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0.6); }
-            70% { box-shadow: 0 0 0 12px rgba(147, 51, 234, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(147, 51, 234, 0); }
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        select option { color: black; background: white; }
+        /* Animasi transisi smooth */
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-[#0a1128] text-white overflow-x-hidden">
+    <div id="root"></div>
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="fixed inset-0 z-50 flex flex-col items-center justify-center animated-bg p-4 overflow-hidden">
-        <div class="glass p-10 rounded-[3rem] w-full max-w-md flex flex-col items-center text-white relative z-10 text-center">
-            <div class="mb-8 relative z-20">
-                <div class="w-28 h-28 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-xl border border-white/30 shadow-lg mx-auto">
-                    <img src="https://iili.io/qaJEpMG.png" alt="Logo BEM" class="w-24 h-24 object-contain">
-                </div>
-            </div>
-            <div class="mb-10 relative z-20">
-                <h1 class="text-3xl font-black uppercase tracking-tight leading-tight">RAPOR BEM FAHUTAN</h1>
-                <p class="text-purple-200 mt-2 font-bold tracking-widest text-sm italic">Kabinet Elaborasi Mimpi</p>
-            </div>
-            <div class="w-full space-y-6 relative z-30 text-left">
-                <input type="text" id="username" placeholder="Username" class="w-full px-6 py-4 rounded-2xl bg-white/20 border border-white/40 text-white placeholder-white/60 focus:outline-none focus:bg-white/30 transition-all font-medium shadow-inner">
-                <div class="password-input-container">
-                    <input type="password" id="password" placeholder="Password" class="w-full px-6 py-4 pr-14 rounded-2xl bg-white/20 border border-white/40 text-white placeholder-white/60 focus:outline-none focus:bg-white/30 transition-all font-medium shadow-inner">
-                    <button type="button" onclick="window.togglePassword()" class="eye-btn-login">
-                        <i id="eye-icon" data-lucide="eye" class="w-6 h-6"></i>
-                    </button>
-                </div>
-                <button onclick="window.handleLogin()" id="login-btn" class="w-full py-4 bg-white text-purple-900 font-black rounded-2xl shadow-2xl hover:bg-purple-50 transition-all tracking-widest uppercase text-sm">MASUK</button>
-                <p id="login-error" class="text-red-300 text-xs font-bold text-center hidden animate-bounce uppercase mt-2">Kredensial Salah!</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- MAIN APP SCREEN -->
-    <div id="main-app" class="hidden opacity-0 transition-opacity duration-1000">
-        <!-- Success Modal -->
-        <div id="success-modal" class="fixed inset-0 z-[120] flex items-center justify-center p-4 success-overlay hidden">
-            <div class="bg-white rounded-[3rem] p-10 max-w-sm w-full text-center shadow-2xl animate-in zoom-in duration-300">
-                <div class="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6"><i data-lucide="check-circle" class="text-emerald-500 w-12 h-12"></i></div>
-                <h3 class="text-2xl font-black text-slate-900 mb-2">Terima Kasih!</h3>
-                <p class="text-slate-500 font-medium leading-relaxed text-sm">Jawaban Anda telah kami record dengan aman. Suara Anda sangat berharga bagi kemajuan kabinet.</p>
-                <button onclick="document.getElementById('success-modal').classList.add('hidden')" class="mt-8 px-10 py-3 bg-emerald-500 text-white font-black rounded-2xl text-xs uppercase tracking-widest hover:bg-emerald-600 transition-colors">Selesai</button>
-            </div>
-        </div>
-
-        <!-- AI Deep Analysis Modal -->
-        <div id="ai-modal" class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xl hidden">
-            <div class="bg-white p-10 rounded-[3rem] max-w-2xl w-full shadow-2xl relative border border-purple-100">
-                <button onclick="document.getElementById('ai-modal').classList.add('hidden')" class="absolute top-8 right-8 text-slate-300 hover:text-red-500 transition-colors"><i data-lucide="x-circle" class="w-8 h-8"></i></button>
-                <div class="flex items-center gap-5 mb-8">
-                    <div class="w-14 h-14 bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg"><i data-lucide="brain-circuit" class="text-white w-8 h-8"></i></div>
-                    <div><h3 class="text-2xl font-black text-slate-900 tracking-tight">Analisis Kinerja ✨</h3><p class="text-xs font-black text-purple-600 uppercase tracking-widest">Gemini AI Analysis</p></div>
-                </div>
-                <div id="ai-loading" class="py-12 space-y-4"><div class="h-4 bg-slate-100 rounded-full w-3/4 animate-pulse"></div><div class="h-4 bg-slate-100 rounded-full w-full animate-pulse"></div><p class="text-center text-xs text-slate-400 font-bold tracking-widest uppercase">Menganalisis performa triwulan Anda...</p></div>
-                <div id="ai-result" class="hidden text-slate-700 leading-relaxed max-h-[450px] overflow-y-auto pr-4 font-medium text-sm"></div>
-            </div>
-        </div>
-
-        <header class="bg-white/80 backdrop-blur-xl shadow-sm sticky top-0 z-40 border-b border-slate-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-24">
-                    <div class="flex items-center space-x-4">
-                        <img src="https://iili.io/qaJEpMG.png" class="w-11 h-11 object-contain">
-                        <div class="hidden xs:block"><span class="font-black text-purple-800 text-lg block leading-none">BEM FAHUTAN</span><span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1 block">Kabinet Elaborasi Mimpi</span></div>
-                    </div>
-                    <nav id="nav-menu" class="flex space-x-1 sm:space-x-4 h-full items-center">
-                        <button onclick="window.switchTab('rapor')" id="tab-rapor" class="px-3 h-12 flex items-center text-[10px] sm:text-xs font-black uppercase tracking-widest tab-active user-menu whitespace-nowrap">Rapor</button>
-                        <button onclick="window.switchTab('survei')" id="tab-survei" class="px-3 h-12 flex items-center text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 user-menu whitespace-nowrap">Survei</button>
-                        <button onclick="window.switchTab('profil')" id="tab-profil" class="px-3 h-12 flex items-center text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 user-menu whitespace-nowrap">Profil</button>
-                        <button onclick="window.switchTab('admin-data')" id="tab-admin-data" class="px-3 h-12 items-center text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hidden admin-menu whitespace-nowrap">Kinerja Kolektif</button>
-                        <button onclick="window.switchTab('admin-survey')" id="tab-admin-survey" class="px-3 h-12 items-center text-[10px] sm:text-xs font-black uppercase tracking-widest text-slate-400 hidden admin-menu whitespace-nowrap">Set Survei</button>
-                    </nav>
-                    <button onclick="window.handleLogout()" class="p-3 bg-red-50 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-sm"><i data-lucide="power" class="w-6 h-6"></i></button>
-                </div>
-            </div>
-        </header>
-
-        <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <!-- SECTION: RAPOR USER -->
-            <div id="section-rapor" class="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-                <div class="bg-white rounded-[3.5rem] p-10 sm:p-14 shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
-                    <div class="absolute -right-32 -top-32 w-80 h-80 bg-purple-50 rounded-full opacity-40 blur-3xl"></div>
-                    <div class="relative z-10 space-y-6 text-center md:text-left flex-grow">
-                        <span class="inline-block px-5 py-2 bg-purple-50 text-purple-600 text-[11px] font-black rounded-full uppercase tracking-[0.2em]">SISTEM PENILAIAN INTERNAL</span>
-                        <h2 id="display-nama" class="text-5xl font-black text-slate-900 leading-tight tracking-tighter">...</h2>
-                        <div class="flex flex-wrap justify-center md:justify-start gap-4 pt-2">
-                            <p class="flex items-center gap-2 text-slate-500 font-bold text-sm bg-slate-50 px-5 py-2.5 rounded-2xl shadow-sm border border-slate-100"><i data-lucide="fingerprint" class="w-4 h-4 text-purple-500"></i> <span id="display-nim">...</span></p>
-                            <p class="flex items-center gap-2 text-slate-500 font-bold text-sm bg-slate-50 px-5 py-2.5 rounded-2xl shadow-sm border border-slate-100"><i data-lucide="award" class="w-4 h-4 text-purple-500"></i> <span id="display-jabatan-hero">...</span></p>
-                        </div>
-                        <p class="text-purple-700 font-black text-lg tracking-wide mt-4" id="display-biro">...</p>
-                    </div>
-                    <div class="hero-gradient-card p-12 sm:p-14 rounded-[3.5rem] text-center text-white min-w-[300px] z-10 relative border-4 border-white/10">
-                        <p class="text-[12px] font-black uppercase tracking-[0.4em] mb-4 opacity-70">RATA-RATA KUMULATIF</p>
-                        <div class="flex items-baseline justify-center"><p id="display-avg" class="text-8xl font-black tracking-tighter">0.00</p><p class="text-3xl font-black opacity-30 ml-2">/4.00</p></div>
-                        <div class="mt-8 h-1.5 w-16 bg-white/20 mx-auto rounded-full"></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    <div class="lg:col-span-2 bg-white rounded-[3rem] p-10 shadow-sm border border-slate-100"><h3 class="font-black text-slate-800 text-xl flex items-center gap-4 mb-10"><span class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center"><i data-lucide="trending-up" class="text-emerald-600"></i></span> Progress Kinerja Triwulan</h3><div class="h-[350px] w-full"><canvas id="performanceChart"></canvas></div></div>
-                    <div class="bg-slate-900 rounded-[3rem] p-10 text-white shadow-2xl flex flex-col justify-between relative overflow-hidden"><div class="absolute -right-10 -bottom-10 w-40 h-40 bg-purple-600/20 rounded-full blur-3xl"></div><div><p class="text-[10px] font-black uppercase text-purple-400 tracking-widest mb-8">Status Pencapaian</p><div class="flex items-center gap-5"><div class="w-20 h-20 bg-white/5 rounded-[2rem] flex items-center justify-center border border-white/10"><i data-lucide="rocket" class="w-10 h-10 text-purple-400"></i></div><div><p class="text-3xl font-black tracking-tight" id="trend-text">Stabil</p></div></div></div><div class="bg-white/5 p-6 rounded-3xl border border-white/10 backdrop-blur-sm"><p class="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-3">Insight AI ✨</p><p class="text-xs italic leading-relaxed text-slate-200">Klik bintang di kartu triwulan untuk analisis taktis.</p></div></div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
-                    <div id="content-tw1" class="bg-white rounded-[3rem] border border-slate-100 flex flex-col h-full hover:shadow-xl transition-all overflow-hidden"></div>
-                    <div id="content-tw2" class="bg-white rounded-[3rem] border border-slate-100 flex flex-col h-full hover:shadow-xl transition-all overflow-hidden"></div>
-                    <div id="content-tw3" class="bg-white rounded-[3rem] border border-slate-100 flex flex-col h-full hover:shadow-xl transition-all overflow-hidden"></div>
-                </div>
-            </div>
-
-            <!-- SECTION: SURVEI USER -->
-            <div id="section-survei" class="hidden space-y-10 animate-in fade-in duration-700"><div id="survey-list-container" class="space-y-12"></div></div>
-
-            <!-- SECTION: PROFIL USER -->
-            <div id="section-profil" class="hidden space-y-10 animate-in fade-in duration-700 max-w-6xl mx-auto">
-                <div class="flex flex-col lg:flex-row gap-10">
-                    <div class="lg:w-1/3 bg-white rounded-[3.5rem] shadow-sm p-14 border border-slate-100 text-center flex flex-col items-center">
-                        <div class="w-44 h-44 bg-purple-50 rounded-[3rem] flex items-center justify-center shadow-inner mb-10"><i data-lucide="user" class="w-24 h-24 text-purple-400"></i></div>
-                        <h2 id="profile-nama" class="text-3xl font-black text-slate-900 leading-tight">...</h2>
-                        <p id="profile-nim-display" class="text-purple-400 font-black tracking-widest uppercase mt-3">...</p>
-                    </div>
-                    <div class="lg:w-2/3 bg-white rounded-[3.5rem] shadow-sm p-14 border border-slate-100">
-                        <div class="flex items-center gap-5 mb-14 border-b border-slate-50 pb-8"><div class="p-3.5 bg-purple-50 rounded-2xl"><i data-lucide="id-card" class="text-purple-600 w-7 h-7"></i></div><h3 class="text-2xl font-black text-slate-800 tracking-tight">Detail Organisasi</h3></div>
-                        <div id="profile-details" class="grid grid-cols-1 sm:grid-cols-2 gap-x-14 gap-y-12"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ADMIN SECTIONS -->
-            <div id="section-admin-data" class="hidden space-y-10 animate-in fade-in duration-700">
-                <div class="bg-white p-10 rounded-[3rem] border border-slate-100 shadow-sm">
-                    <div class="flex flex-col lg:flex-row justify-between items-center gap-6 mb-12"><h2 class="text-3xl font-black text-slate-900 tracking-tight">Pusat Data Kinerja Kolektif</h2><div class="flex gap-3"><button onclick="window.sortAdminData()" class="px-8 py-4 bg-purple-100 text-purple-700 font-black rounded-2xl text-xs uppercase tracking-widest">Urutkan Nilai</button><button onclick="window.exportData()" class="px-8 py-4 bg-emerald-600 text-white font-black rounded-2xl text-xs uppercase tracking-widest">Ekspor CSV</button></div></div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                        <input type="text" id="admin-search" onkeyup="window.filterAdminTable()" class="px-6 py-4 rounded-2xl bg-slate-50 border-none font-black text-sm shadow-inner" placeholder="Cari Nama/NIM..."><select id="admin-filter-biro" onchange="window.filterAdminTable()" class="px-6 py-4 rounded-2xl bg-slate-50 border-none font-black text-sm shadow-inner text-black"><option value="">Semua Biro</option></select><select id="admin-filter-tw" onchange="window.filterAdminTable()" class="px-6 py-4 rounded-2xl bg-slate-50 border-none font-black text-sm shadow-inner text-black"><option value="1">Triwulan 1</option><option value="2">Triwulan 2</option><option value="3">Triwulan 3</option></select>
-                    </div>
-                    <div id="admin-performance-table"></div>
-                </div>
-            </div>
-
-            <div id="section-admin-survey" class="hidden space-y-8 animate-in fade-in duration-700">
-                <div class="bg-white p-12 rounded-[3rem] border border-slate-100 max-w-4xl shadow-sm">
-                    <h2 class="text-3xl font-black text-slate-900 mb-8 flex items-center gap-4"><i data-lucide="settings-2" class="text-indigo-600"></i> Pengaturan Survei BPH Visit</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <div class="space-y-6">
-                            <div><label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Target Biro Staf</label><select id="pub-survey-biro" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none font-bold text-sm outline-none focus:ring-2 focus:ring-indigo-100 text-black"><option value="Semua">Seluruh Internal BEM</option></select></div>
-                            <div><label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Waktu Mulai Pengisian</label><input type="datetime-local" id="pub-survey-start" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none font-bold text-sm outline-none text-black"></div>
-                            <div><label class="block text-[11px] font-black text-slate-400 uppercase tracking-widest mb-3">Waktu Berakhir</label><input type="datetime-local" id="pub-survey-end" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none font-bold text-sm outline-none text-black"></div>
-                            <button onclick="window.publishBPHVisitSurvey()" class="w-full py-5 bg-indigo-600 text-white font-black rounded-2xl uppercase tracking-widest shadow-xl shadow-indigo-100 hover:bg-indigo-700 active:scale-95 transition-all">Publish ke Anggota</button>
-                        </div>
-                        <div class="bg-slate-50 p-8 rounded-[2.5rem] border border-slate-100 shadow-inner"><p class="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-6">Status Publikasi</p><div id="admin-active-surveys" class="space-y-4"></div></div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- MAIN MODULE BLOCK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection as fCollection, doc as fDoc, setDoc as fSetDoc, addDoc as fAddDoc, deleteDoc as fDeleteDoc, onSnapshot as fOnSnapshot, query as fQuery, getDocs as fGetDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Firebase Config (Updated with your provided config)
-        const firebaseConfig = {
-            apiKey: "AIzaSyBxsfyR3ah3E1e9-5-85Q2S2Ucoqipe9_I",
-            authDomain: "rapor-bem.firebaseapp.com",
-            projectId: "rapor-bem",
-            storageBucket: "rapor-bem.firebasestorage.app",
-            messagingSenderId: "685530280520",
-            appId: "1:685530280520:web:5a92f9c97bde03ff5cde7d",
-            measurementId: "G-SLQK9W4T5M"
-        };
-
-        const scriptURL = "https://script.google.com/macros/s/AKfycbwiZvXx-FmrLmqGWHZIpOSlufhQ6OOjkE0hxFpcIxDEBSXH6WTXhhzteLvTeQ7uhPns/exec";
-        const BASE_CSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9VR79GJ9IPYlgaAYuHtEXcSBxA-Zb_kBohzwiwtrJu9HVX5S3GVlvhwE0Xbwy_dyX0Y5PYQuLBgcv/pub?gid=0&single=true&output=csv";
-        const TW_URLS = { 1: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9VR79GJ9IPYlgaAYuHtEXcSBxA-Zb_kBohzwiwtrJu9HVX5S3GVlvhwE0Xbwy_dyX0Y5PYQuLBgcv/pub?gid=1910706860&single=true&output=csv", 2: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9VR79GJ9IPYlgaAYuHtEXcSBxA-Zb_kBohzwiwtrJu9HVX5S3GVlvhwE0Xbwy_dyX0Y5PYQuLBgcv/pub?gid=1724018331&single=true&output=csv", 3: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9VR79GJ9IPYlgaAYuHtEXcSBxA-Zb_kBohzwiwtrJu9HVX5S3GVlvhwE0Xbwy_dyX0Y5PYQuLBgcv/pub?gid=1134099960&single=true&output=csv" };
-
-        let currentUser = null, mainDB = [], twData = {1:[], 2:[], 3:[]}, myChart = null;
-        let adminSortOrder = 'desc';
-        let cloudSurveys = [];
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useMemo } = React;
         
-        window.fbState = { db: null, auth: null, user: null, submittedIds: [], appId: typeof __app_id !== 'undefined' ? __app_id : 'bem-fahutan-2025' };
+        // --- KONFIGURASI ---
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxmMf9yjoNuzbypcGQMp2Q_XSpgzcWfuEG_hHvne_fIWg-Oy9iXEMtcsqqOSq1cmGv/exec"; 
+        const LOGO_URL = "https://i.ibb.co.com/PGDMfSbq/logo.png";
 
-        // --- Functions Exposed to Window ---
+        // Komponen GlassCard tetap di luar untuk stabilitas
+        const GlassCard = ({ children, className = "" }) => (
+            <div className={`glass rounded-2xl p-6 shadow-xl relative z-10 ${className}`}>
+                {children}
+            </div>
+        );
 
-        window.loadAllData = async function() {
-            try {
-                const fetchCsv = (u) => new Promise((res, rej) => Papa.parse(u, { download: true, header: true, skipEmptyLines: true, complete: r => res(r.data), error: e => rej(e) }));
-                mainDB = await fetchCsv(BASE_CSV);
-                twData[1] = await fetchCsv(TW_URLS[1]);
-                twData[2] = await fetchCsv(TW_URLS[2]);
-                twData[3] = await fetchCsv(TW_URLS[3]);
-                const biros = [...new Set(mainDB.map(i => i.Biro_Departemen))].filter(b => b);
-                ['pub-survey-biro', 'admin-filter-biro'].forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) {
-                        el.innerHTML = '<option value="Semua">Seluruh Internal BEM</option>';
-                        biros.forEach(b => { const o = document.createElement('option'); o.value = b; o.textContent = b; el.appendChild(o); });
-                    }
-                });
-            } catch (e) { console.error("CSV loading failed", e); }
-        };
+        // Komponen InputField dengan integrasi Lucide Icons
+        const InputField = ({ label, showToggle, toggleAction, isPasswordVisible, ...props }) => (
+            <div className="mb-4 relative">
+                <label className="block text-sm font-bold text-blue-100 mb-1.5">{label}</label>
+                <div className="relative">
+                    <input 
+                        {...props} 
+                        className={`w-full bg-white/5 border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-white/20 transition-all ${props.disabled ? 'border-white/10 opacity-50 cursor-not-allowed' : 'border-white/20 group-hover:border-white/40'}`}
+                    />
+                    {showToggle && (
+                        <button 
+                            type="button" 
+                            onClick={toggleAction}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors p-1 mt-3"
+                        >
+                            <i data-lucide={isPasswordVisible ? "eye-off" : "eye"} style={{ width: 18, height: 18 }}></i>
+                        </button>
+                    )}
+                </div>
+            </div>
+        );
 
-        window.initFirebase = async function() {
-            try {
-                const app = initializeApp(firebaseConfig);
-                window.fbState.auth = getAuth(app);
-                window.fbState.db = getFirestore(app);
+        const SelectField = ({ label, options, ...props }) => (
+            <div className="mb-4">
+                <label className="block text-sm font-bold text-blue-100 mb-1.5">{label}</label>
+                <div className="relative">
+                    <select 
+                        {...props} 
+                        className={`w-full bg-white/10 border rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer appearance-none ${props.disabled ? 'border-white/10 opacity-50 cursor-not-allowed' : 'border-white/20'}`}
+                    >
+                        <option value="">Pilih Opsi</option>
+                        {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
+                        <i data-lucide="chevron-down" style={{width: 14}}></i>
+                    </div>
+                </div>
+            </div>
+        );
 
-                // Auth Logic (Rule 3)
-                const loginFirebase = async () => {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        try { await signInWithCustomToken(window.fbState.auth, __initial_auth_token); } 
-                        catch (e) { await signInAnonymously(window.fbState.auth); }
-                    } else {
-                        await signInAnonymously(window.fbState.auth);
-                    }
-                };
-                await loginFirebase();
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [view, setView] = useState('dashboard');
+            const [loading, setLoading] = useState(false);
+            const [dataArsip, setDataArsip] = useState([]);
+            const [dataCOPM, setDataCOPM] = useState([]);
+            const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+            const [showPassword, setShowPassword] = useState(false);
+            const [error, setError] = useState('');
+            const [submitting, setSubmitting] = useState(false);
+            const [searchQuery, setSearchQuery] = useState('');
+            const [showDeleteModal, setShowDeleteModal] = useState(null);
 
-                onAuthStateChanged(window.fbState.auth, (user) => {
-                    window.fbState.user = user;
-                    if (user && currentUser) setupFirestoreListeners();
-                });
-            } catch (error) { console.error("Cloud init failed", error); }
-        };
-
-        function setupFirestoreListeners() {
-            if (!window.fbState.db) return;
-            const surveyQuery = fQuery(fCollection(window.fbState.db, 'artifacts', window.fbState.appId, 'public', 'data', 'surveylist'));
-            fOnSnapshot(surveyQuery, (snapshot) => {
-                cloudSurveys = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderUserSurveysIntro();
-                renderAdminActiveSurveys();
+            const [formArsip, setFormArsip] = useState({
+                tglTerima: '', noSurat: '', tglSurat: '', asal: '', perihal: '', diteruskan: '', kode: '', file: null
             });
 
-            if (window.fbState.user) {
-                const submissionQuery = fCollection(window.fbState.db, 'artifacts', window.fbState.appId, 'users', window.fbState.user.uid, 'submissions');
-                fOnSnapshot(submissionQuery, (snapshot) => {
-                    window.fbState.submittedIds = snapshot.docs.map(doc => doc.id);
-                    renderUserSurveysIntro();
-                });
-            }
-        }
+            const [formCOPM, setFormCOPM] = useState({
+                noSurat: '', judul: '', linkDocs: '', owner: '', tglIsi: '', deadline: '', status: 'Draft', notes: '', linkPdf: ''
+            });
 
-        window.togglePassword = function() {
-            const p = document.getElementById('password'), i = document.getElementById('eye-icon');
-            if (p.type === 'password') {
-                p.type = 'text';
-                i.setAttribute('data-lucide', 'eye-off');
-            } else {
-                p.type = 'password';
-                i.setAttribute('data-lucide', 'eye');
-            }
-            lucide.createIcons();
-        };
+            const DEPARTEMEN_LIST = ["BEM Fahutan", "Ketua BEM", "Sekretaris", "Bendahara", "Koordinator Bidang", "Badan Manajemen Internal", "Biro Research and Development", "Biro Media and Digital Information", "Departemen Advokasi dan Kesejahteraan Mahasiswa", "Departemen Konektivitas Eksternal", "Departemen Ekonomi Kreatif", "Departemen Human Resource and Development", "Departemen Akademik dan Prestasi", "Departemen Seni dan Budaya", "Departemen Olahraga", "Departemen Sosial Lingkungan dan Kehutanan", "Departemen Kajian dan Aksi Strategis"];
+            const KODE_ARSIP = ["INT", "ORM", "UKM", "BEM", "DTM", "FAK", "IPB", "EKS", "MIT", "MED"];
+            const OWNER_LIST = ["BPH", "MI", "RND", "MENDIGI", "KESTARI", "FINANCE", "KORBID", "KONEK", "ADKESMAH", "EKRAF", "AKPRES", "SENBUD", "HRD", "DEPOR", "SLH", "KASTRAT", "[MP] FORCUP", "[MP] BCR", "[MP] SEMARAK", "[MP] FACT", "[MP] RIMBADES", "Faculty Day"];
+            const STATUS_LIST = ["Draft", "Final", "Revisi"];
 
-        window.handleLogin = function() {
-            const u = document.getElementById('username').value.trim(), p = document.getElementById('password').value.trim();
-            if ((u === "bemfahutan" && p === "elaelaese26") || (u === "raporbmi" && p === "biemi123")) { 
-                currentUser = { Nama_Lengkap: "Administrator", Role: "ADMIN", Biro_Departemen: "Admin", Jabatan: "Pimpinan" }; 
-                showApp(); return; 
-            }
-            const user = mainDB.find(x => x.NIM === u && x.Password === p);
-            if (user) { currentUser = { ...user, Role: "USER" }; showApp(); } 
-            else document.getElementById('login-error').classList.remove('hidden');
-        };
+            useEffect(() => { 
+                lucide.createIcons(); 
+            });
 
-        async function showApp() {
-            document.getElementById('login-screen').classList.add('hidden');
-            const main = document.getElementById('main-app');
-            main.classList.remove('hidden');
-            setTimeout(() => main.classList.add('opacity-100'), 10);
-            
-            const isAdmin = currentUser.Role === "ADMIN";
-            document.querySelectorAll('.user-menu').forEach(m => m.style.display = isAdmin ? 'none' : 'flex');
-            document.querySelectorAll('.admin-menu').forEach(m => m.style.display = isAdmin ? 'flex' : 'none');
-            
-            if (isAdmin) switchTab('admin-data'); 
-            else { switchTab('rapor'); populateUserData(); }
-            
-            if (!window.fbState.db) await window.initFirebase();
-            else setupFirestoreListeners();
-            lucide.createIcons();
-        }
-
-        function populateUserData() {
-            document.getElementById('display-nama').textContent = currentUser.Nama_Lengkap;
-            document.getElementById('display-nim').textContent = currentUser.NIM;
-            document.getElementById('display-jabatan-hero').textContent = currentUser.Jabatan;
-            document.getElementById('display-biro').textContent = currentUser.Biro_Departemen;
-            const scores = [1,2,3].map(tw => {
-                const d = twData[tw].find(x => x.NIM === currentUser.NIM);
-                renderTW(`content-tw${tw}`, d, tw);
-                return d && d.Nilai_Akhir ? parseFloat(d.Nilai_Akhir) : null;
-            }).filter(s => s !== null);
-            animateNumber('display-avg', 0, scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(2) : "0.00");
-            updateChart(scores);
-            const depts = { "E1": "Manajemen Hutan", "E2": "Teknologi Hasil Hutan", "E3": "Konservasi Sumberdaya Hutan dan Ekowisata", "E4": "Silvikultur" };
-            const profDetail = document.getElementById('profile-details');
-            if (profDetail) {
-                profDetail.innerHTML = `
-                    <div class="space-y-2"><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">DEPARTEMEN AKADEMIK</p><p class="font-black text-slate-800 text-xl">${depts[currentUser.NIM?.substring(0,2)] || "Fakultas Kehutanan"}</p></div>
-                    <div class="space-y-2"><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">BIRO / DEPARTEMEN BEM</p><p class="font-black text-slate-800 text-xl">${currentUser.Biro_Departemen}</p></div>
-                    <div class="space-y-2"><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">JABATAN STRUKTURAL</p><p class="font-black text-slate-800 text-xl">${currentUser.Jabatan}</p></div>
-                    <div class="space-y-2"><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">TANGGAL LAHIR</p><p class="font-black text-slate-800 text-xl">${currentUser.Tanggal_Lahir || "-"}</p></div>
-                    <div class="sm:col-span-2 space-y-2"><p class="text-[10px] text-slate-400 font-black uppercase tracking-widest">ALAMAT SUREL</p><p class="font-black text-slate-800 text-xl break-all">${currentUser.Email || "-"}</p></div>`;
-            }
-            document.getElementById('profile-nama').textContent = currentUser.Nama_Lengkap;
-            document.getElementById('profile-nim-display').textContent = currentUser.NIM;
-            
-            const trendEl = document.getElementById('trend-text');
-            if (trendEl && scores.length >= 2) {
-                const diff = scores[scores.length-1] - scores[scores.length-2];
-                trendEl.textContent = diff > 0 ? "Meningkat" : diff < 0 ? "Menurun" : "Stabil";
-            }
-            lucide.createIcons();
-        }
-
-        function renderTW(id, data, twNum) {
-            const c = document.getElementById(id); if (!c) return;
-            if (!data || !data.Nilai_Akhir) { c.innerHTML = `<div class="p-20 text-center text-slate-300 italic font-bold">TW${twNum} Belum Tersedia</div>`; return; }
-            const p = parseFloat(data["Kehadiran_40%"]), r = parseFloat(data["TanggungJawab_35%"]), a = parseFloat(data["Keaktifan_25%"]), f = parseFloat(data.Nilai_Akhir);
-            c.innerHTML = `<div class="p-10 space-y-8"><div class="flex justify-between items-center"><p class="text-[10px] font-black uppercase text-slate-400">Triwulan ${twNum}</p><span class="px-5 py-2 rounded-full text-xs font-black bg-slate-50 text-purple-600 shadow-sm border border-purple-50">${data.Mutu}</span></div>${[['Kehadiran (40%)', p, 'indigo'], ['Tanggung Jawab (35%)', r, 'purple'], ['Keaktifan (25%)', a, 'amber']].map(([l, v, clr]) => `<div class="space-y-2"><div class="flex justify-between text-[10px] font-bold text-slate-400 uppercase tracking-widest"><span>${l}</span><span>${v.toFixed(2)}/4.00</span></div><div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden"><div class="progress-bar-fill bg-${clr}-500 h-full" style="width: ${(v/4)*100}%"></div></div></div>`).join('')}<div class="pt-8 border-t flex justify-between items-center"><div><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Skor Akhir</p><p class="text-4xl font-black text-slate-900 tracking-tighter">${f.toFixed(2)}</p></div><div class="flex gap-2">
-                <button onclick='window.analyzeWithAI(${twNum}, ${JSON.stringify(data)})' class="p-3 bg-purple-600 text-white rounded-xl ai-btn-glow shadow-lg"><i data-lucide="sparkles" class="w-5 h-5"></i></button>
-                <a href="${data.Link_Download}" target="_blank" class="p-4 bg-slate-50 text-slate-500 rounded-2xl hover:bg-slate-100 border transition-all"><i data-lucide="download" class="w-5 h-5"></i></a>
-            </div></div></div>`;
-            lucide.createIcons();
-        }
-
-        function animateNumber(id, start, end) {
-            const obj = document.getElementById(id); if (!obj) return;
-            let current = 0; const target = parseFloat(end);
-            const timer = setInterval(() => { current += target / 40; if (current >= target) { obj.textContent = target.toFixed(2); clearInterval(timer); } else obj.textContent = current.toFixed(2); }, 30);
-        }
-
-        function updateChart(pts) {
-            const canvas = document.getElementById('performanceChart'); if (!canvas) return;
-            const ctx = canvas.getContext('2d'); if (myChart) myChart.destroy();
-            myChart = new Chart(ctx, { type: 'line', data: { labels: ['TW1', 'TW2', 'TW3'], datasets: [{ data: pts, borderColor: '#7c3aed', borderWidth: 5, tension: 0.45, fill: true, backgroundColor: 'rgba(124, 58, 237, 0.05)', pointRadius: 6, pointBackgroundColor: '#FFF' }] }, options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 4 } } } });
-        }
-
-        window.switchTab = function(t) {
-            document.querySelectorAll('nav button').forEach(b => { b.classList.remove('tab-active'); b.classList.add('text-slate-400'); });
-            const btn = document.getElementById(`tab-${t}`); if (btn) { btn.classList.add('tab-active'); btn.classList.remove('text-slate-400'); }
-            ['rapor', 'survei', 'profil', 'admin-data', 'admin-survey'].forEach(s => { const el = document.getElementById(`section-${s}`); if (el) el.classList.add('hidden'); });
-            const target = document.getElementById(`section-${t}`); if (target) target.classList.remove('hidden');
-            if (t === 'admin-data') renderAdmin();
-            if (t === 'survei') renderUserSurveysIntro();
-            if (t === 'admin-survey') renderAdminActiveSurveys();
-            lucide.createIcons();
-        };
-
-        window.publishBPHVisitSurvey = async function() {
-            const biro = document.getElementById('pub-survey-biro').value, start = document.getElementById('pub-survey-start').value, end = document.getElementById('pub-survey-end').value;
-            if (!start || !end) { alert("Pilih waktu!"); return; }
-            if (!window.fbState.db) { alert("Cloud belum siap."); return; }
-            try {
-                await fAddDoc(fCollection(window.fbState.db, 'artifacts', window.fbState.appId, 'public', 'data', 'surveylist'), {
-                    title: "[BPH Visit] Evaluasi BPH, Koordinator Bidang dan Pimpinan",
-                    biro, startTime: new Date(start).getTime(), endTime: new Date(end).getTime(), created_at: Date.now()
-                });
-                alert("Survei dipublikasikan ke semua HP anggota!");
-            } catch (e) { alert("Gagal mempublikasikan."); }
-        };
-
-        function renderAdminActiveSurveys() {
-            const c = document.getElementById('admin-active-surveys'); if (!c) return;
-            if (cloudSurveys.length === 0) { c.innerHTML = "<p class='text-slate-400 italic text-xs'>Belum ada survei aktif.</p>"; return; }
-            c.innerHTML = cloudSurveys.map(s => `<div class="p-4 bg-white rounded-2xl border flex justify-between items-center mb-3 shadow-sm"><div><p class="font-black text-slate-800 text-sm">${s.biro}</p><p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Hingga: ${new Date(s.endTime).toLocaleString('id-ID')}</p></div><button onclick="window.deleteSurvey('${s.id}')" class="p-2 text-red-500 hover:bg-red-50 rounded-xl transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`).join('');
-            lucide.createIcons();
-        }
-
-        window.deleteSurvey = async function(id) {
-            try { await fDeleteDoc(fDoc(window.fbState.db, 'artifacts', window.fbState.appId, 'public', 'data', 'surveylist', id)); } catch (e) { alert("Gagal."); }
-        };
-
-        function renderUserSurveysIntro() {
-            const c = document.getElementById('survey-list-container'); if (!c) return;
-            const now = Date.now();
-            const mySurveys = cloudSurveys.filter(s => (s.biro === "Semua" || s.biro === currentUser.Biro_Departemen) && now >= s.startTime && now <= s.endTime);
-            if (mySurveys.length === 0) { c.innerHTML = `<div class="bg-white p-14 rounded-[3.5rem] text-center border shadow-sm max-w-4xl mx-auto"><i data-lucide="clipboard-x" class="w-12 h-12 mx-auto text-slate-200 mb-6"></i><p class="text-slate-500 font-black text-xl tracking-tight">Tidak Ada Survei Aktif</p></div>`; } 
-            else {
-                c.innerHTML = mySurveys.map(s => {
-                    const submitted = window.fbState.submittedIds?.includes(s.id);
-                    if (submitted) return `<div class="bg-white p-14 rounded-[3.5rem] text-center border shadow-sm max-w-4xl mx-auto"><i data-lucide="check-circle" class="w-12 h-12 mx-auto text-emerald-400 mb-6"></i><p class="text-slate-800 font-black text-xl tracking-tight">Jawaban Terkirim</p><p class="text-slate-400 mt-2 font-medium">Terima kasih, data sudah kami record.</p></div>`;
-                    return `<div class="bg-white p-10 sm:p-14 rounded-[3.5rem] text-center border shadow-sm max-w-4xl mx-auto space-y-8 animate-in zoom-in-95 duration-500"><div class="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto"><i data-lucide="clipboard-list" class="text-indigo-600 w-10 h-10"></i></div><h2 class="text-3xl font-black text-slate-900 tracking-tight">${s.title}</h2><div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left max-w-xl mx-auto"><div class="p-4 bg-slate-50 rounded-2xl border border-slate-100"><p class="text-[9px] font-black text-indigo-400 uppercase tracking-widest mb-1">MULAI</p><p class="text-xs font-bold text-slate-600">${new Date(s.startTime).toLocaleString('id-ID')}</p></div><div class="p-4 bg-slate-50 rounded-2xl border border-slate-100"><p class="text-[9px] font-black text-red-400 uppercase tracking-widest mb-1">BERAKHIR</p><p class="text-xs font-bold text-slate-600">${new Date(s.endTime).toLocaleString('id-ID')}</p></div></div><p class="text-slate-500 font-medium leading-relaxed max-w-2xl mx-auto text-center">Silakan mengisi evaluasi internal terhadap Pimpinan & BPH BEM Fahutan Kabinet Elaborasi Mimpi melalui tombol di bawah.</p><button onclick='window.renderSurveyForm(${JSON.stringify(s)})' class="px-14 py-5 bg-indigo-600 text-white font-black rounded-2xl uppercase tracking-widest hover:bg-indigo-700 active:scale-95 transition-all tracking-widest shadow-xl">BPH VISIT</button></div>`;
-                }).join('');
-            }
-            lucide.createIcons();
-        }
-
-        window.renderSurveyForm = function(s) {
-            const c = document.getElementById('survey-list-container');
-            const renderSection = (title, q1, q2, q3) => {
-                const id = title.replace(/[^a-z0-9]/gi, '').toLowerCase();
-                return `<div class="space-y-10"><h3 class="text-indigo-600 font-black text-sm uppercase tracking-[0.25em] flex items-center gap-5"><span class="w-10 h-10 bg-indigo-50 rounded-2xl flex items-center justify-center text-xs font-black">#</span> ${title}</h3><div class="space-y-8"><div class="bg-slate-50 p-10 rounded-[2.5rem] border border-slate-100 shadow-inner"><p class="text-sm font-black text-slate-800 mb-8 leading-relaxed">${q1}</p><div class="star-group">${[5,4,3,2,1].map(v => `<input type="radio" id="${id}-${v}" name="${id}_star" value="${v}"><label for="${id}-${v}">★</label>`).join('')}</div></div><div class="grid grid-cols-1 md:grid-cols-2 gap-8"><div class="space-y-3"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">KEKURANGAN</p><textarea name="${id}_less" class="w-full p-8 bg-slate-50 rounded-[2rem] border-none text-sm font-medium outline-none shadow-inner" rows="3" placeholder="Tuliskan kekurangan..."></textarea></div><div class="space-y-3"><p class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">SARAN</p><textarea name="${id}_advice" class="w-full p-8 bg-slate-50 rounded-[2rem] border-none text-sm font-medium outline-none shadow-inner" rows="3" placeholder="Tuliskan saran..."></textarea></div></div></div></div>`;
-            };
-            c.innerHTML = `<div class="bg-white rounded-[4rem] border border-slate-100 shadow-2xl overflow-hidden max-w-5xl mx-auto"><div class="bg-indigo-950 p-14 text-white"><span class="inline-block px-5 py-2 bg-indigo-600 text-[10px] font-black uppercase rounded-full mb-8 tracking-widest">Internal Evaluasi</span><h2 class="text-4xl font-black mb-8 leading-tight tracking-tight">${s.title}</h2><p class="text-indigo-100 text-sm leading-relaxed border-t border-white/10 pt-8 italic text-center">Halo Dreamakers! Mohon berikan masukan jujur guna meningkatkan kualitas kepemimpinan, koordinasi, dan kinerja organisasi ke depan. Partisipasi aktif dari seluruh staf sangat kami harapkan.</p></div><form id="form-survey-${s.id}" class="p-14 space-y-16">
-                ${renderSection("KOORDINATOR BIDANG", "Seberapa puas Anda terhadap kinerja Koordinator Bidang dalam mengoordinasikan dan memantau departemen di bawahnya selama satu bulan terakhir?", "Menurut Anda, apa yang kurang baik dari peran Koordinator Bidang dalam membina departemen?", "Apa saran untuk meningkatkan koordinasi Korbid dengan departemen di bawahnya?")}
-                ${renderSection("BADAN PENGURUS HARIAN", "Seberapa puas Anda terhadap kinerja BPH dalam mengoordinasikan jalannya organisasi selama satu bulan terakhir?", "Menurut Anda, apa hal yang kurang berjalan baik dari kinerja BPH selama satu bulan terakhir?", "Apa saran atau evaluasi untuk meningkatkan koordinasi dan sistem kerja BPH ke depan?")}
-                ${renderSection("KETUA BADAN BIRO DEPARTEMEN", "Seberapa puas Anda terhadap kinerja Ketua Badan/Biro/Departemen dalam memimpin dan mengoordinasikan timnya selama satu bulan terakhir?", "Menurut Anda, apa yang kurang baik dari kepemimpinan Ketua Badan/Biro/Departemen selama satu bulan terakhir?", "Apa saran atau masukan untuk meningkatkan kepemimpinan Ketua Badan/Biro/Departemen ke depan?")}
-                ${renderSection("FINANCE DAN KESTARI", "Seberapa puas Anda terhadap kinerja Kestari dan Finance dalam mengelola administrasi serta keuangan organisasi selama satu bulan terakhir?", "Menurut Anda, apa yang kurang berjalan baik dalam pengelolaan administrasi dan keuangan organisasi?", "Apa saran untuk meningkatkan sistem administrasi dan pengelolaan keuangan organisasi?")}
-                <button type="button" onclick="window.submitSurveyResponse('${s.id}')" id="btn-submit-${s.id}" class="w-full py-7 bg-indigo-600 text-white font-black rounded-[2.5rem] uppercase tracking-widest hover:bg-indigo-700 shadow-2xl transition-all">SUBMIT EVALUASI</button></form></div>`;
-            lucide.createIcons();
-        };
-
-        window.submitSurveyResponse = async function(surveyId) {
-            const form = document.getElementById(`form-survey-${surveyId}`), btn = document.getElementById(`btn-submit-${surveyId}`);
-            if (form.querySelectorAll('input[type="radio"]:checked').length < 4) { alert("Rating bintang wajib diisi!"); return; }
-            btn.disabled = true; btn.textContent = "MENGIRIM...";
-            const data = { timestamp: new Date().toLocaleString('id-ID'), nim: currentUser.NIM, nama: currentUser.Nama_Lengkap, biro: currentUser.Biro_Departemen };
-            new FormData(form).forEach((v, k) => data[k] = v);
-            try {
-                await fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data) });
-                if (window.fbState.db && window.fbState.user) {
-                    await fSetDoc(fDoc(window.fbState.db, 'artifacts', window.fbState.appId, 'users', window.fbState.user.uid, 'submissions', surveyId), { submitted: true, timestamp: Date.now() });
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+                try {
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ 
+                            action: 'login', 
+                            payload: loginForm
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') {
+                        setUser(result.user);
+                    } else {
+                        setError(result.message || 'Username atau Password salah!');
+                    }
+                } catch (err) { 
+                    setError('Koneksi database gagal. Periksa Script URL.'); 
                 }
-                document.getElementById('success-modal').classList.remove('hidden');
-                window.switchTab('rapor');
-            } catch (e) { alert("Koneksi gagal."); btn.disabled = false; }
+                setLoading(false);
+            };
+
+            const fetchData = useCallback(async () => {
+                if (!user) return;
+                setLoading(true);
+                try {
+                    const response = await fetch(`${SCRIPT_URL}?action=readAll`);
+                    const result = await response.json();
+                    setDataArsip(result.arsip || []);
+                    setDataCOPM(result.copm || []);
+                } catch (err) { console.error(err); }
+                setLoading(false);
+            }, [user]);
+
+            useEffect(() => { if (user) fetchData(); }, [user, fetchData]);
+
+            const handleSubmitArsip = async (e) => {
+                e.preventDefault();
+                setSubmitting(true);
+                try {
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'submitArsip', payload: formArsip })
+                    });
+                    const res = await response.json();
+                    if(res.status === 'success') {
+                        alert("Surat berhasil diarsipkan!");
+                        setFormArsip({ tglTerima: '', noSurat: '', tglSurat: '', asal: '', perihal: '', diteruskan: '', kode: '', file: null });
+                        fetchData();
+                        setView('data-arsip');
+                    }
+                } catch (err) { alert("Terjadi kesalahan pengiriman."); }
+                setSubmitting(false);
+            };
+
+            const handleSubmitCOPM = async (e) => {
+                e.preventDefault();
+                setSubmitting(true);
+                try {
+                    const payload = { ...formCOPM, notes: formCOPM.notes || "" };
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'submitCOPM', payload })
+                    });
+                    const res = await response.json();
+                    if(res.status === 'success') {
+                        alert("Data COPM Berhasil Diperbarui!");
+                        setFormCOPM({ noSurat: '', judul: '', linkDocs: '', owner: '', tglIsi: '', deadline: '', status: 'Draft', notes: '', linkPdf: '' });
+                        fetchData();
+                        setView('cek-status');
+                    }
+                } catch (err) { alert("Gagal memperbarui data."); }
+                setSubmitting(false);
+            };
+
+            const handleDeleteArsip = async (noSurat) => {
+                setLoading(true);
+                try {
+                    const response = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({ action: 'deleteArsip', payload: { noSurat } })
+                    });
+                    const res = await response.json();
+                    if(res.status === 'success') fetchData();
+                } catch (err) { console.error(err); }
+                setShowDeleteModal(null);
+                setLoading(false);
+            };
+
+            // FUNGSI EDIT YANG SEBELUMNYA HILANG
+            const handleEditCOPM = (item) => {
+                setFormCOPM(item);
+                setView('ajukan');
+            };
+
+            const filteredArsip = dataArsip.filter(item => 
+                Object.values(item).some(val => String(val).toLowerCase().includes(searchQuery.toLowerCase()))
+            );
+
+            if (!user) {
+                return (
+                    <div className="min-h-screen flex flex-col items-center justify-center p-4 relative bg-[#0a0e27]">
+                        <div className="absolute w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
+                        <GlassCard className="w-full max-w-md border-t-4 border-t-[#193DEB] fade-in">
+                            <div className="text-center mb-8">
+                                <img src={LOGO_URL} alt="Logo" className="h-24 mx-auto mb-4 drop-shadow-lg" />
+                                <h1 className="text-xl font-extrabold uppercase tracking-widest text-white">Sistem Persuratan</h1>
+                                <p className="text-blue-300 text-[10px] mt-1 font-bold uppercase tracking-wider">BEM Fahutan Elaborasi Mimpi</p>
+                            </div>
+                            <form onSubmit={handleLogin}>
+                                <InputField 
+                                    label="Username" 
+                                    type="text" 
+                                    value={loginForm.username} 
+                                    onChange={e => setLoginForm(p => ({...p, username: e.target.value}))} 
+                                    required 
+                                    placeholder="Username"
+                                />
+                                <InputField 
+                                    label="Password" 
+                                    type={showPassword ? "text" : "password"} 
+                                    value={loginForm.password} 
+                                    onChange={e => setLoginForm(p => ({...p, password: e.target.value}))} 
+                                    required 
+                                    placeholder="Password"
+                                    showToggle={true}
+                                    isPasswordVisible={showPassword}
+                                    toggleAction={() => setShowPassword(!showPassword)}
+                                />
+                                {error && (
+                                    <div className="text-red-400 text-[10px] mb-4 flex items-center gap-2 bg-red-400/10 p-2 rounded-lg border border-red-400/20">
+                                        <i data-lucide="alert-circle" style={{width: 14}}></i> {error}
+                                    </div>
+                                )}
+                                <button disabled={loading} className="w-full py-4 bg-[#193DEB] hover:bg-blue-600 text-white font-black rounded-xl shadow-lg transition-all active:scale-95 flex justify-center items-center gap-2">
+                                    {loading ? <i data-lucide="loader" className="animate-spin"></i> : <i data-lucide="log-in"></i>}
+                                    {loading ? "MEMUAT..." : "MASUK KE SISTEM"}
+                                </button>
+                            </form>
+                        </GlassCard>
+                        <div className="mt-8 text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">&copy; Sekretaris Eksekutif</div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen flex flex-col md:flex-row bg-[#0a1128]">
+                    {/* Sidebar */}
+                    <div className="w-full md:w-64 bg-black/40 backdrop-blur-xl border-r border-white/10 p-6 flex flex-col shrink-0">
+                        <div className="mb-10 flex items-center gap-3">
+                            <img src={LOGO_URL} className="h-10" alt="Logo" />
+                            <div className="text-xs font-black leading-tight uppercase tracking-tighter">ELABORASI<br/><span className="text-blue-500">MIMPI</span></div>
+                        </div>
+                        <nav className="flex-1 space-y-2 font-bold text-sm">
+                            <button onClick={() => setView('dashboard')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${view === 'dashboard' ? 'bg-[#193DEB] shadow-lg' : 'hover:bg-white/5 text-gray-400'}`}>
+                                <i data-lucide="layout-dashboard"></i> Dashboard
+                            </button>
+                            {user.role === 'admin' && (
+                                <>
+                                    <div className="pt-6 pb-2 px-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">Pengarsipan</div>
+                                    <button onClick={() => setView('arsipkan')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${view === 'arsipkan' ? 'bg-[#193DEB] shadow-lg' : 'hover:bg-white/5 text-gray-400'}`}>
+                                        <i data-lucide="archive"></i> Arsipkan Surat
+                                    </button>
+                                    <button onClick={() => setView('data-arsip')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${view === 'data-arsip' ? 'bg-[#193DEB] shadow-lg' : 'hover:bg-white/5 text-gray-400'}`}>
+                                        <i data-lucide="list"></i> Data Surat
+                                    </button>
+                                </>
+                            )}
+                            <div className="pt-6 pb-2 px-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">COPM Surat</div>
+                            <button onClick={() => setView('ajukan')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${view === 'ajukan' ? 'bg-[#193DEB] shadow-lg' : 'hover:bg-white/5 text-gray-400'}`}>
+                                <i data-lucide="plus-circle"></i> Ajukan Surat
+                            </button>
+                            <button onClick={() => setView('cek-status')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${view === 'cek-status' ? 'bg-[#193DEB] shadow-lg' : 'hover:bg-white/5 text-gray-400'}`}>
+                                <i data-lucide="shield-check"></i> Cek Status
+                            </button>
+                        </nav>
+                        <div className="mt-auto pt-6 border-t border-white/10 flex items-center gap-3 text-[10px]">
+                            <div className="bg-[#193DEB] w-8 h-8 rounded-lg font-black flex items-center justify-center text-white">U</div>
+                            <div className="truncate flex-1">
+                                <b className="text-white uppercase tracking-wider">{user.nama_lengkap}</b><br/>
+                                <span className="opacity-50 font-bold uppercase">{user.biro_departemen}</span>
+                            </div>
+                            <button onClick={() => setUser(null)} className="text-red-400 hover:bg-red-400/10 p-2 rounded-lg transition-all" title="Logout">
+                                <i data-lucide="log-out" style={{width: 16}}></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex-1 p-6 md:p-10 overflow-y-auto">
+                        
+                        {view === 'dashboard' && (
+                            <div className="fade-in">
+                                <h2 className="text-3xl font-black mb-8 italic uppercase tracking-tighter">Dashboard Utama</h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <GlassCard className="border-l-4 border-l-blue-500 py-10 flex justify-between items-center group hover:bg-white/5 transition-all">
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-blue-300">Total Arsip Surat</p>
+                                            <h3 className="text-6xl font-black">{dataArsip.length}</h3>
+                                        </div>
+                                        <i data-lucide="archive" className="opacity-10 group-hover:opacity-30 transition-all" style={{width: 80, height: 80}}></i>
+                                    </GlassCard>
+                                    <GlassCard className="border-l-4 border-l-indigo-500 py-10 flex justify-between items-center group hover:bg-white/5 transition-all">
+                                        <div>
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-indigo-300">Total COPM Surat</p>
+                                            <h3 className="text-6xl font-black">{dataCOPM.length}</h3>
+                                        </div>
+                                        <i data-lucide="file-text" className="opacity-10 group-hover:opacity-30 transition-all" style={{width: 80, height: 80}}></i>
+                                    </GlassCard>
+                                </div>
+                            </div>
+                        )}
+
+                        {view === 'arsipkan' && (
+                            <div className="max-w-4xl mx-auto fade-in">
+                                <h2 className="text-2xl font-black mb-6 uppercase italic flex items-center gap-3">
+                                    <i data-lucide="archive" className="text-blue-500"></i> Arsipkan Surat Baru
+                                </h2>
+                                <GlassCard>
+                                    <form onSubmit={handleSubmitArsip} className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                                        <InputField label="Tanggal Terima" type="date" value={formArsip.tglTerima} onChange={e => setFormArsip(p => ({...p, tglTerima: e.target.value}))} required />
+                                        <InputField label="Nomor Surat" type="text" value={formArsip.noSurat} onChange={e => setFormArsip(p => ({...p, noSurat: e.target.value}))} required />
+                                        <InputField label="Tanggal Surat" type="date" value={formArsip.tglSurat} onChange={e => setFormArsip(p => ({...p, tglSurat: e.target.value}))} required />
+                                        <InputField label="Terima Dari" type="text" value={formArsip.asal} onChange={e => setFormArsip(p => ({...p, asal: e.target.value}))} required />
+                                        <div className="md:col-span-2"><InputField label="Perihal" type="text" value={formArsip.perihal} onChange={e => setFormArsip(p => ({...p, perihal: e.target.value}))} required /></div>
+                                        <SelectField label="Diteruskan Kepada" options={DEPARTEMEN_LIST} value={formArsip.diteruskan} onChange={e => setFormArsip(p => ({...p, diteruskan: e.target.value}))} required />
+                                        <SelectField label="Kode Arsip" options={KODE_ARSIP} value={formArsip.kode} onChange={e => setFormArsip(p => ({...p, kode: e.target.value}))} required />
+                                        <div className="md:col-span-2 mb-6">
+                                            <div className="border-2 border-dashed border-white/20 p-10 rounded-2xl text-center relative group hover:border-blue-500 transition-all bg-white/5">
+                                                <input type="file" accept=".pdf" className="absolute inset-0 opacity-0 cursor-pointer z-10" onChange={e => {
+                                                    const f = e.target.files[0];
+                                                    if (!f) return;
+                                                    const r = new FileReader();
+                                                    r.onload = () => setFormArsip(p => ({...p, file: { base64: r.result.split(',')[1], name: f.name, type: f.type }}));
+                                                    r.readAsDataURL(f);
+                                                }} />
+                                                {formArsip.file ? (
+                                                    <div className="flex flex-col items-center gap-2">
+                                                        <i data-lucide="file-check" className="text-green-400" style={{width: 32, height: 32}}></i>
+                                                        <span className="text-green-400 font-bold uppercase text-[10px]">{formArsip.file.name}</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="opacity-50 font-black flex flex-col items-center gap-2 text-[10px]">
+                                                        <i data-lucide="upload-cloud" style={{width: 32, height: 32}}></i>
+                                                        <span>KLIK UNTUK UNGGAH BERKAS PDF SURAT</span>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <button disabled={submitting} className="bg-[#193DEB] hover:bg-blue-600 px-8 py-4 rounded-xl font-black shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                                            {submitting ? <i data-lucide="loader" className="animate-spin"></i> : <i data-lucide="save"></i>}
+                                            {submitting ? "PROSES..." : "SIMPAN ARSIP"}
+                                        </button>
+                                    </form>
+                                </GlassCard>
+                            </div>
+                        )}
+
+                        {view === 'data-arsip' && (
+                            <div className="fade-in">
+                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                                    <h2 className="text-2xl font-black uppercase italic">Database Surat Masuk</h2>
+                                    <div className="relative w-full md:w-80">
+                                        <i data-lucide="search" className="absolute left-4 top-1/2 -translate-y-1/2 opacity-30"></i>
+                                        <input className="bg-white/5 border border-white/10 rounded-full pl-12 pr-6 py-3 text-sm w-full outline-none focus:ring-1 focus:ring-blue-500 transition-all" placeholder="Cari berdasarkan No/Perihal/Asal..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+                                    </div>
+                                </div>
+                                <GlassCard className="p-0 overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-[11px] whitespace-nowrap">
+                                            <thead className="bg-white/5 font-black uppercase tracking-widest text-blue-200">
+                                                <tr>
+                                                    <th className="px-6 py-5 border-r border-white/5">No. Surat</th>
+                                                    <th className="px-6 py-4 border-r border-white/5">Asal Pengirim</th>
+                                                    <th className="px-6 py-4 border-r border-white/5">Perihal</th>
+                                                    <th className="px-6 py-4 text-center">Tindakan</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/5">
+                                                {filteredArsip.length === 0 ? (
+                                                    <tr><td colSpan="4" className="text-center py-20 opacity-30 italic font-bold">Data tidak ditemukan atau masih kosong.</td></tr>
+                                                ) : (
+                                                    filteredArsip.map((it, i) => (
+                                                        <tr key={i} className="hover:bg-white/[0.03] transition-colors">
+                                                            <td className="px-6 py-5 font-mono font-black text-blue-400 tracking-tighter">{it.noSurat}</td>
+                                                            <td className="px-6 py-4 font-bold">{it.asal}</td>
+                                                            <td className="px-6 py-4 truncate max-w-xs">{it.perihal}</td>
+                                                            <td className="px-6 py-4 flex justify-center gap-4">
+                                                                {it.fileUrl && (
+                                                                    <a href={it.fileUrl} target="_blank" className="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-lg font-black hover:bg-blue-500/20 transition-all flex items-center gap-1 uppercase text-[10px]">
+                                                                        <i data-lucide="file-text" style={{width: 12}}></i> LIHAT
+                                                                    </a>
+                                                                )}
+                                                                <button onClick={() => setShowDeleteModal(it.noSurat)} className="bg-red-500/10 text-red-400 px-3 py-1 rounded-lg font-black hover:bg-red-500/20 transition-all flex items-center gap-1 uppercase text-[10px]">
+                                                                    <i data-lucide="trash-2" style={{width: 12}}></i> HAPUS
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </GlassCard>
+                            </div>
+                        )}
+
+                        {view === 'ajukan' && (
+                            <div className="max-w-4xl mx-auto fade-in">
+                                <h2 className="text-2xl font-black mb-6 uppercase italic flex items-center gap-3">
+                                    <i data-lucide="file-plus" className="text-indigo-400"></i> {formCOPM.judul ? "Edit / Revisi Pengajuan" : "Ajukan Pembuatan Surat"}
+                                </h2>
+                                <GlassCard>
+                                    <form onSubmit={handleSubmitCOPM} className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+                                        <InputField 
+                                            label="Nomor Surat" 
+                                            type="text" 
+                                            value={formCOPM.noSurat} 
+                                            onChange={e => setFormCOPM(p => ({...p, noSurat: e.target.value}))} 
+                                            disabled={user.role !== 'admin'} 
+                                            placeholder={user.role === 'admin' ? "Input Nomor Surat" : "Hanya Admin"}
+                                        />
+                                        <InputField 
+                                            label="Judul Surat" 
+                                            type="text" 
+                                            value={formCOPM.judul} 
+                                            onChange={e => setFormCOPM(p => ({...p, judul: e.target.value}))} 
+                                            required 
+                                            disabled={user.role === 'admin'} 
+                                            placeholder="Nama Kegiatan/Proposal"
+                                        />
+                                        <InputField 
+                                            label="Link Google Docs" 
+                                            type="url" 
+                                            value={formCOPM.linkDocs} 
+                                            onChange={e => setFormCOPM(p => ({...p, linkDocs: e.target.value}))} 
+                                            required 
+                                            disabled={user.role === 'admin'} 
+                                            placeholder="https://docs.google.com/..."
+                                        />
+                                        <SelectField 
+                                            label="Owner Unit" 
+                                            options={OWNER_LIST} 
+                                            value={formCOPM.owner} 
+                                            onChange={e => setFormCOPM(p => ({...p, owner: e.target.value}))} 
+                                            required 
+                                            disabled={user.role === 'admin'} 
+                                        />
+                                        <InputField 
+                                            label="Tgl Pengisian" 
+                                            type="date" 
+                                            value={formCOPM.tglIsi} 
+                                            onChange={e => setFormCOPM(p => ({...p, tglIsi: e.target.value}))} 
+                                            required 
+                                            disabled={user.role === 'admin'} 
+                                        />
+                                        <InputField 
+                                            label="Deadline" 
+                                            type="date" 
+                                            value={formCOPM.deadline} 
+                                            onChange={e => setFormCOPM(p => ({...p, deadline: e.target.value}))} 
+                                            required 
+                                            disabled={user.role === 'admin'} 
+                                        />
+                                        
+                                        {user.role === 'admin' ? (
+                                            <>
+                                                <SelectField label="Status (Wewenang Admin)" options={STATUS_LIST} value={formCOPM.status} onChange={e => setFormCOPM(p => ({...p, status: e.target.value}))} />
+                                                <InputField label="Link PDF Final" type="url" value={formCOPM.linkPdf} onChange={e => setFormCOPM(p => ({...p, linkPdf: e.target.value}))} placeholder="Link Berkas PDF yang sudah ditanda tangan" />
+                                            </>
+                                        ) : (
+                                            <div className="mb-4 bg-blue-500/10 p-4 rounded-xl border border-blue-500/20 text-[11px]">
+                                                <p className="font-bold uppercase text-blue-300 mb-1">Status Pengajuan</p>
+                                                <div className="flex items-center gap-2">
+                                                    <i data-lucide="shield-alert" style={{width: 14}}></i>
+                                                    <span className="font-black uppercase tracking-widest">{formCOPM.status}</span>
+                                                </div>
+                                                <p className="opacity-50 mt-1 italic">Hanya Admin yang dapat merubah Status & mengunggah PDF Final.</p>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="md:col-span-2">
+                                            <InputField 
+                                                label="Catatan / Notes (Opsional)" 
+                                                type="text" 
+                                                value={formCOPM.notes} 
+                                                onChange={e => setFormCOPM(p => ({...p, notes: e.target.value}))} 
+                                                disabled={user.role === 'admin'} 
+                                                placeholder="Berikan info tambahan jika diperlukan..."
+                                            />
+                                        </div>
+                                        
+                                        <button disabled={submitting} className="bg-[#193DEB] hover:bg-blue-600 px-12 py-4 rounded-2xl font-black uppercase shadow-lg shadow-blue-900/20 flex items-center justify-center gap-3 transition-all active:scale-95 w-full md:w-auto">
+                                            {submitting ? <i data-lucide="loader" className="animate-spin"></i> : <i data-lucide="check-circle-2"></i>}
+                                            {submitting ? "MENGIRIM..." : "SIMPAN PERUBAHAN DATA"}
+                                        </button>
+                                    </form>
+                                </GlassCard>
+                            </div>
+                        )}
+
+                        {view === 'cek-status' && (
+                            <div className="fade-in">
+                                <h2 className="text-2xl font-black mb-8 uppercase italic flex items-center gap-3">
+                                    <i data-lucide="shield-check" className="text-blue-500"></i> Monitoring Status COPM
+                                </h2>
+                                <GlassCard className="p-0 overflow-hidden">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-[11px] whitespace-nowrap">
+                                            <thead className="bg-white/5 font-black uppercase tracking-widest text-indigo-200">
+                                                <tr>
+                                                    <th className="px-8 py-5 border-r border-white/5">Judul Surat</th>
+                                                    <th className="px-8 py-5 border-r border-white/5">Owner</th>
+                                                    <th className="px-8 py-5 border-r border-white/5">Status</th>
+                                                    <th className="px-8 py-5 text-center">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-white/5">
+                                                {dataCOPM.length === 0 ? (
+                                                    <tr><td colSpan="4" className="text-center py-20 opacity-30 italic font-bold">Belum ada pengajuan surat saat ini.</td></tr>
+                                                ) : (
+                                                    dataCOPM.map((it, i) => (
+                                                        <tr key={i} className="hover:bg-white/[0.03] transition-colors">
+                                                            <td className="px-8 py-5">
+                                                                <div className="font-black text-white uppercase">{it.judul}</div>
+                                                                <div className="text-[9px] opacity-40 font-mono mt-0.5">{it.noSurat || 'Nomor Belum Terbit'}</div>
+                                                            </td>
+                                                            <td className="px-8 py-5 font-bold text-gray-400">{it.owner}</td>
+                                                            <td className="px-8 py-5">
+                                                                <span className={`px-3 py-1 rounded-md font-black tracking-tighter uppercase border ${
+                                                                    it.status === 'Final' ? 'bg-green-500/10 text-green-400 border-green-500/20' : 
+                                                                    it.status === 'Revisi' ? 'bg-orange-500/10 text-orange-400 border-orange-500/20' : 
+                                                                    'bg-blue-500/10 text-blue-400 border-blue-500/20'
+                                                                }`}>
+                                                                    {it.status || 'Draft'}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-8 py-5 flex justify-center gap-4">
+                                                                <a href={it.linkDocs} target="_blank" className="flex items-center gap-1 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg font-black transition-all text-blue-400 border border-white/5">
+                                                                    <i data-lucide="file-text" style={{width: 14}}></i> DOCS
+                                                                </a>
+                                                                <button onClick={() => handleEditCOPM(it)} className="flex items-center gap-1 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg font-black transition-all text-indigo-400 border border-white/5">
+                                                                    <i data-lucide="edit-3" style={{width: 14}}></i> EDIT
+                                                                </button>
+                                                                {it.linkPdf && (
+                                                                    <a href={it.linkPdf} target="_blank" className="flex items-center gap-1 bg-green-500/10 hover:bg-green-500/20 px-3 py-1.5 rounded-lg font-black transition-all text-green-400 border border-green-500/20">
+                                                                        <i data-lucide="file-check" style={{width: 14}}></i> PDF
+                                                                    </a>
+                                                                )}
+                                                            </td>
+                                                        </tr>
+                                                    ))
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </GlassCard>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Modal Hapus */}
+                    {showDeleteModal && (
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 fade-in">
+                            <GlassCard className="max-w-sm w-full text-center border-t-4 border-t-red-600 shadow-red-900/20 shadow-2xl">
+                                <i data-lucide="alert-triangle" className="mx-auto text-red-600 mb-4" style={{width: 60, height: 60}}></i>
+                                <h3 className="text-lg font-black mb-2 uppercase tracking-tight text-white">KONFIRMASI HAPUS</h3>
+                                <p className="text-[10px] text-gray-400 mb-6 font-bold">Apakah Anda yakin ingin menghapus data arsip surat nomor:<br/><span className="text-red-400 font-black">{showDeleteModal}</span>?</p>
+                                <div className="flex gap-4 px-2">
+                                    <button onClick={() => setShowDeleteModal(null)} className="flex-1 py-3 rounded-xl bg-white/5 font-black uppercase text-[10px] border border-white/10 hover:bg-white/10 transition-all">BATAL</button>
+                                    <button onClick={() => handleDeleteArsip(showDeleteModal)} className="flex-1 py-3 rounded-xl bg-red-600 font-black uppercase text-[10px] shadow-lg shadow-red-900/40 hover:bg-red-700 transition-all active:scale-95 text-white">HAPUS DATA</button>
+                                </div>
+                            </GlassCard>
+                        </div>
+                    )}
+                </div>
+            );
         };
 
-        function renderAdmin() {
-            const tw = document.getElementById('admin-filter-tw')?.value || 1; const data = twData[tw]; 
-            const container = document.getElementById('admin-performance-table'); if (!container) return;
-            const best = {}; data.forEach(x => { const v = parseFloat(x.Nilai_Akhir||0); if(!best[x.Biro_Departemen]||v>best[x.Biro_Departemen]) best[x.Biro_Departemen]=v; });
-            const rows = [...mainDB].filter(u => u.NIM).sort((a,b) => { const sA=parseFloat(data.find(x=>x.NIM===a.NIM)?.Nilai_Akhir||0), sB=parseFloat(data.find(x=>x.NIM===b.NIM)?.Nilai_Akhir||0); return adminSortOrder==='desc'?sB-sA:sA-sB; });
-            container.innerHTML = `<div class="overflow-x-auto rounded-[3rem] border border-slate-100 shadow-sm mt-8"><table class="w-full text-left"><thead class="bg-slate-50 border-b font-black text-[10px] uppercase text-slate-400"><tr><th class="px-8 py-6">NIM</th><th class="px-8 py-6">Identitas</th><th class="px-8 py-6 text-center">Nilai</th><th class="px-8 py-6 text-center">Mutu</th></tr></thead><tbody class="divide-y">${rows.map(u => { const s = data.find(x=>x.NIM===u.NIM)||{}, v = parseFloat(s.Nilai_Akhir||0), isB = v === best[u.Biro_Departemen] && v > 0; return `<tr class="${isB?'best-score-row':''} admin-row" data-name="${(u.Nama_Lengkap||'').toLowerCase()}" data-biro="${u.Biro_Departemen}"><td class="px-8 py-6 text-xs font-black text-slate-400">${u.NIM}</td><td class="px-8 py-6"><p class="font-black text-slate-900">${u.Nama_Lengkap} ${isB?'✨':''}</p><p class="text-[9px] text-purple-600 font-bold uppercase">${u.Biro_Departemen}</p></td><td class="px-8 py-6 font-black text-purple-700 text-center text-lg">${v>0?v.toFixed(2):'-'}</td><td class="px-8 py-6 text-center"><span class="px-4 py-1 rounded-full text-[10px] font-black bg-white shadow-sm border border-slate-100">${s.Mutu||'-'}</span></td></tr>`; }).join('')}</tbody></table></div>`;
-            lucide.createIcons();
-        }
-
-        window.sortAdminData = () => { adminSortOrder = adminSortOrder === 'desc' ? 'asc' : 'desc'; renderAdmin(); };
-        window.filterAdminTable = () => { const s = document.getElementById('admin-search').value.toLowerCase(), b = document.getElementById('admin-filter-biro').value; document.querySelectorAll('.admin-row').forEach(r => r.style.display = (r.getAttribute('data-name').includes(s) && (b === "" || r.getAttribute('data-biro') === b)) ? "table-row" : "none"); };
-        window.handleLogout = () => location.reload();
-        window.exportData = () => alert("Export CSV sedang diproses...");
-
-        // Start Application
-        window.loadAllData().then(() => {
-            lucide.createIcons();
-        });
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
